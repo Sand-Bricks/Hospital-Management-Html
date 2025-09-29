@@ -33,5 +33,5 @@ jobs:
           # Optional: prune old images, keep only latest 3
           docker images -q hospital-management | tail -n +4 | xargs -r docker rmi -f
 
-          # Show logs of the new container
+          # Show last 20 logs for verification
           docker logs hospital-management --tail 20
