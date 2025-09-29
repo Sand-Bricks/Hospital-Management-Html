@@ -3,7 +3,7 @@ name: CI/CD Hospital-Management
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy-vm:
