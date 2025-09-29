@@ -1,0 +1,37 @@
+name: CI/CD Hospital-Management
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-vm:
+    name: Deploy on Self-Hosted Runner
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: |
+          echo "Building Docker image..."
+          docker build -t hospital-management:latest .
+
+      - name: Deploy Docker container on 8087
+        run: |
+          echo "Stopping and removing old container if exists..."
+          if docker ps -a -q -f name=hospital-management; then
+            docker stop hospital-management || true
+            docker rm hospital-management || true
+          fi
+
+          echo "Starting new container on port 8087..."
+          docker run -d --name hospital-management -p 8087:8087 hospital-management:latest
+
+          # Optional: prune old images, keep only latest 3
+          docker images -q hospital-management | tail -n +4 | xargs -r docker rmi -f
+
+          # Show logs of the new container
+          docker logs hospital-management --tail 20
